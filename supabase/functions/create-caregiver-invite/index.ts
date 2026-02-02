@@ -173,7 +173,7 @@ Deno.serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RSTMindHealth <onboarding@resend.dev>",
+        from: "FullSaludAlzheimer <onboarding@resend.dev>",
         to: [caregiverEmail],
         subject: "Código de vinculación de cuidador",
         html: `<p><b>Código:</b> ${code}</p><p>Expira en 15 minutos.</p>`,

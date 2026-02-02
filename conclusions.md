@@ -1,7 +1,7 @@
-# Conclusiones y Resumen Técnico - RSTMindHealth
+# Conclusiones y Resumen Técnico - FullSaludAlzheimer
 
 ## 1. Validación de la Solución
-RSTMindHealth aborda con éxito la problemática de la asistencia integral para pacientes con Alzheimer y la carga operativa de sus cuidadores. La aplicación logra un equilibrio entre una interfaz extremadamente simplificada para el paciente (fomentando su independencia y estimulación cognitiva) y un panel de control robusto para el cuidador (garantizando monitoreo y seguridad).
+FullSaludAlzheimer aborda con éxito la problemática de la asistencia integral para pacientes con Alzheimer y la carga operativa de sus cuidadores. La aplicación logra un equilibrio entre una interfaz extremadamente simplificada para el paciente (fomentando su independencia y estimulación cognitiva) y un panel de control robusto para el cuidador (garantizando monitoreo y seguridad).
 
 La implementación de **Zonas Seguras (Geofencing)** y **Estimulación Cognitiva (Juegos y Música)** digitaliza procesos que tradicionalmente requerían supervisión física constante o herramientas analógicas dispersas.
 
@@ -31,4 +31,4 @@ El proyecto sienta una base sólida para futuras expansiones:
 *   **Modo Offline:** Mejora en la persistencia local (SQLite/WatermelonDB) para permitir que los pacientes realicen actividades cognitivas sin conexión a internet.
 
 ## 5. Conclusión Final
-RSTMindHealth demuestra que es posible construir soluciones de salud digital complejas, seguras y escalables utilizando tecnologías web modernas y servicios en la nube, reduciendo drásticamente el tiempo de desarrollo sin comprometer la calidad o la seguridad del paciente.
+FullSaludAlzheimer demuestra que es posible construir soluciones de salud digital complejas, seguras y escalables utilizando tecnologías web modernas y servicios en la nube, reduciendo drásticamente el tiempo de desarrollo sin comprometer la calidad o la seguridad del paciente.

@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
         ${location ? `<p><b>Ubicación aproximada:</b> ${location}</p>` : ""}
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
         <p style="font-size: 12px; color: #666;">
-          Este es un mensaje automático enviado desde RSTMindHealth. Por favor, contacte al paciente o acuda a su ubicación lo antes posible.
+          Este es un mensaje automático enviado desde FullSaludAlzheimer. Por favor, contacte al paciente o acuda a su ubicación lo antes posible.
         </p>
       </div>
     `;
@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "RSTMindHealth SOS <onboarding@resend.dev>",
+        from: "FullSaludAlzheimer SOS <onboarding@resend.dev>",
         to: recipients,
         subject: `🚨 SOS Emergencia: ${patientName}`,
         html: emailHtml,

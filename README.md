@@ -1,7 +1,7 @@
-# RSTMindHealth
+# FullSaludAlzheimer
 
 ## Descripción General
-**RSTMindHealth** es una aplicación diseñada específicamente para asistir a pacientes con Alzheimer y proporcionar herramientas de monitoreo y gestión para sus cuidadores. Originalmente desarrollada como una aplicación web, ha sido migrada a una solución móvil nativa para Android utilizando Capacitor, permitiendo aprovechar funcionalidades del dispositivo como geolocalización en segundo plano y notificaciones push.
+**FullSaludAlzheimer** es una aplicación diseñada específicamente para asistir a pacientes con Alzheimer y proporcionar herramientas de monitoreo y gestión para sus cuidadores. Originalmente desarrollada como una aplicación web, ha sido migrada a una solución móvil nativa para Android utilizando Capacitor, permitiendo aprovechar funcionalidades del dispositivo como geolocalización en segundo plano y notificaciones push.
 
 La aplicación opera bajo un modelo **Serverless**, eliminando la necesidad de un backend tradicional (como Express o Spring). Toda la lógica de negocio, autenticación y gestión de datos se maneja a través de **Supabase** y sus Edge Functions.
 

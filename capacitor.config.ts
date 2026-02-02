@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.marcos.RSTMindHealth',
-  appName: 'RSTMindHealth',
+  appName: 'FullSaludAlzheimer',
   webDir: 'dist'
 };
 

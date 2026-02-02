@@ -22,7 +22,7 @@ export const WelcomeScreen: React.FC = () => {
                 </div>
                 <div className="text-center flex flex-col gap-3 mt-2">
                     <h1 className="text-[#111812] dark:text-white text-4xl sm:text-[40px] font-bold tracking-tight leading-tight">
-                        RSTMindHealth
+                        FullSaludAlzheimer
                     </h1>
                     <div className="space-y-2 max-w-[320px] mx-auto">
                         <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-200">
@@ -325,7 +325,7 @@ export const RegisterScreen: React.FC = () => {
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight mb-3">Crear Cuenta</h1>
                     <p className="text-slate-600 dark:text-[#9da1b9] text-lg leading-relaxed max-w-xs mx-auto">
-                        Completa tus datos para unirte a RSTMindHealth.
+                        Completa tus datos para unirte a FullSaludAlzheimer.
                     </p>
                 </header>
 

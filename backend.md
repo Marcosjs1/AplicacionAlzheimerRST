@@ -1,7 +1,7 @@
-# Backend Serverless - RSTMindHealth
+# Backend Serverless - FullSaludAlzheimer
 
 ## Visión General
-RSTMindHealth prescinde completamente de un backend monolítico tradicional. No existen servidores Node.js, Python o Java gestionados por el equipo.
+FullSaludAlzheimer prescinde completamente de un backend monolítico tradicional. No existen servidores Node.js, Python o Java gestionados por el equipo.
 
 Toda la lógica del lado del servidor se delega en **Supabase**, aprovechando su arquitectura Serverless compuesta por:
 1.  **PostgreSQL + RLS:** Para almacenamiento y seguridad de datos.

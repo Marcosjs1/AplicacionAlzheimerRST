@@ -1,4 +1,4 @@
-# Diseño de Base de Datos - RSTMindHealth
+# Diseño de Base de Datos - FullSaludAlzheimer
 
 Este documento describe el esquema de base de datos implementado en Supabase (PostgreSQL). El diseño sigue un modelo centrado en la seguridad a nivel de fila (Row Level Security - RLS) para garantizar que los datos médicos y personales estén estrictamente aislados y solo sean accesibles por los usuarios autorizados (Paciente o Cuidador vinculado).
 

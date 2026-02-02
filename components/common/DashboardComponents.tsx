@@ -51,7 +51,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         style={{backgroundImage: `url('${avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Buddy"}')`}}
                     ></div>
                     <div>
-                        <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-[#111812] dark:text-white">RSTMindHealth</h2>
+                        <h2 className="text-lg font-bold leading-tight tracking-[-0.015em] text-[#111812] dark:text-white">FullSaludAlzheimer</h2>
                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Versión Accesible</p>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 # Funcionalidad: Zona Segura (Geofencing)
 
-La **Zona Segura** es una de las características más críticas de RSTMindHealth. Permite monitorear pasivamente la ubicación del paciente y alertar automáticamente al cuidador si el paciente abandona un área geográfica predefinida.
+La **Zona Segura** es una de las características más críticas de FullSaludAlzheimer. Permite monitorear pasivamente la ubicación del paciente y alertar automáticamente al cuidador si el paciente abandona un área geográfica predefinida.
 
 Esta funcionalidad combina UI web, almacenamiento en la nube, código nativo de Android y funciones Serverless.
 

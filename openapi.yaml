@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: RSTMindHealth Edge Functions
-  description: API documentation for specific Supabase Edge Functions used in the RSTMindHealth project.
+  title: FullSaludAlzheimer Edge Functions
+  description: API documentation for specific Supabase Edge Functions used in the FullSaludAlzheimer project.
   version: 1.0.0
 servers:
   - url: https://[PROJECT_REF].supabase.co/functions/v1

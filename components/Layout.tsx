@@ -109,7 +109,7 @@ export const DesktopSidebar: React.FC = () => {
 
           <div>
             <h2 className="text-base font-bold leading-tight text-[#111812] dark:text-white">
-              RSTMindHealth
+              FullSaludAlzheimer
             </h2>
           </div>
         </div>

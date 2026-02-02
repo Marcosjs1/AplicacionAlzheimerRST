@@ -1,6 +1,6 @@
-# Arquitectura del Sistema - RSTMindHealth
+# Arquitectura del Sistema - FullSaludAlzheimer
 
-Este documento describe la arquitectura técnica del proyecto RSTMindHealth. El sistema sigue un modelo **Serverless** y **Mobile-First**, utilizando Supabase como Plataforma de Backend como Servicio (BaaS) y Capacitor para la integración nativa en Android.
+Este documento describe la arquitectura técnica del proyecto FullSaludAlzheimer. El sistema sigue un modelo **Serverless** y **Mobile-First**, utilizando Supabase como Plataforma de Backend como Servicio (BaaS) y Capacitor para la integración nativa en Android.
 
 ## Diagrama de Alto Nivel
 
