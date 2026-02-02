@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: RSTMindHealth Edge Functions
+  description: API documentation for specific Supabase Edge Functions used in the RSTMindHealth project.
+  version: 1.0.0
+servers:
+  - url: https://[PROJECT_REF].supabase.co/functions/v1
+    description: Production Supabase Edge Functions URL
+
+paths:
+  /geofence-alert:
+    post:
+      summary: Report Geo-fence Transition
+      description: |
+        Called by the Android native layer when a geofence transition (EXIT/ENTER) is detected.
+        Inserts a secure audit log into the database and triggers real-time alerts to caregivers.
+      operationId: reportGeofenceEvent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - patient_id
+                - event_type
+                - lat
+                - lng
+              properties:
+                patient_id:
+                  type: string
+                  format: uuid
+                  description: The UUID of the patient who triggered the event.
+                  example: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                event_type:
+                  type: string
+                  enum: [ENTER, EXIT]
+                  description: The type of transition detected.
+                  example: "EXIT"
+                lat:
+                  type: number
+                  format: double
+                  description: Latitude at the time of the event.
+                  example: -34.603722
+                lng:
+                  type: number
+                  format: double
+                  description: Longitude at the time of the event.
+                  example: -58.381592
+      responses:
+        '200':
+          description: Event successfully recorded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Alert processed"
+        '400':
+          description: Invalid request payload.
+        '401':
+          description: Unauthorized. Missing or invalid Bearer Token.
+        '500':
+          description: Internal Server Error.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase Auth JWT (access_token)

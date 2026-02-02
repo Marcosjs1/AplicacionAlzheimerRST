@@ -1,75 +1,126 @@
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+import { GoogleGenerativeAI, ChatSession } from "@google/generative-ai";
 
-let chat: Chat | null = null;
-let ai: GoogleGenAI | null = null;
+let genAI: GoogleGenerativeAI | null = null;
+let chatSession: ChatSession | null = null;
+let currentModelName: string | null = null;
+
+const SUPPORTED_MODELS = [
+    "gemini-2.5-flash", 
+    "gemini-2.0-flash", 
+    "gemini-flash-latest", 
+    "gemini-pro-latest",
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-flash", // Mantenemos fallback por si acaso en otros entornos
+    "gemini-pro"
+];
 
 const getClient = () => {
-    if (!ai) {
-        const apiKey = process.env.API_KEY;
+    if (!genAI) {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
         if (!apiKey) {
-            throw new Error("API_KEY not found in environment");
+            throw new Error("VITE_GEMINI_API_KEY not found in environment");
         }
-        ai = new GoogleGenAI({ apiKey });
+        genAI = new GoogleGenerativeAI(apiKey);
     }
-    return ai;
+    return genAI;
 };
 
 export const startChat = async (): Promise<void> => {
-    try {
-        const client = getClient();
-        // Initialize chat session using ai.chats.create
-        chat = client.chats.create({
-            model: 'gemini-3-pro-preview',
-            config: {
-                systemInstruction: "You are a warm, patient, and empathetic companion for an elderly person. Your name is 'Aida'. Speak clearly, use simple language but do not be patronizing. Offer encouragement, help with remembering things, and engage in pleasant conversation about their day, health, or memories. Keep responses concise and easy to read.",
-                temperature: 0.7,
-                topK: 40,
-                topP: 0.95,
-            }
-        });
-    } catch (error) {
-        console.error("Error starting chat:", error);
-        throw error;
+    const client = getClient();
+    let lastError: any = null;
+
+    for (const modelName of SUPPORTED_MODELS) {
+        try {
+            console.log(`🔌 Probando compatibilidad con: ${modelName}...`);
+            const model = client.getGenerativeModel({
+                model: modelName,
+                systemInstruction: "You are a warm, patient, and empathetic companion for an elderly person. Your name is 'Aida'. Speak clearly, use simple language but do not be patronizing.",
+            });
+
+            // Pequeña prueba real para confirmar que el modelo soporta generación
+            // Usamos un texto muy corto para minimizar latencia y consumo
+            await model.generateContent({ contents: [{ role: 'user', parts: [{ text: 'hi' }] }] });
+
+            chatSession = model.startChat({
+                history: [],
+                generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1000,
+                },
+            });
+
+            currentModelName = modelName;
+            console.log(`✅ Conexión establecida con éxito usando: ${modelName}`);
+            return;
+        } catch (error: any) {
+            const msg = error?.message || "";
+            console.warn(`⚠️ Modelo ${modelName} no compatible o no encontrado:`, msg);
+            lastError = error;
+            // Continuar con el siguiente modelo si es 404 o similar
+            continue;
+        }
     }
+
+    throw lastError || new Error("No se pudo conectar con ningún modelo de Gemini disponible. Verifique su API Key.");
 };
 
 export const sendMessage = async (text: string): Promise<string> => {
-    if (!chat) {
-        await startChat();
-    }
-    
-    if (!chat) {
-        throw new Error("Failed to initialize chat session");
-    }
-
     try {
-        const result: GenerateContentResponse = await chat.sendMessage({ message: text });
-        return result.text || "Lo siento, no pude entender eso. ¿Podrías repetirlo?";
-    } catch (error) {
-        console.error("Error sending message:", error);
+        if (!chatSession) {
+            await startChat();
+        }
+        
+        if (!chatSession) throw new Error("Sesión de chat no inicializada");
+
+        const result = await chatSession.sendMessage(text);
+        const response = await result.response;
+        return response.text() || "Lo siento, no pude entender eso.";
+    } catch (error: any) {
+        console.error("Error en sendMessage:", error);
+        const msg = error?.message || "";
+        
+        if (error?.status === 429 || msg.includes("429")) {
+            return "QUOTA_EXCEEDED: Límite de uso alcanzado, probá en unos segundos.";
+        }
+        
+        if (msg.includes("404") || msg.includes("not found")) {
+            // Si el modelo que creíamos que funcionaba da 404 de repente, intentamos resetear y fallar con gracia
+            chatSession = null;
+            return "ERROR: El modelo de IA tuvo un problema de disponibilidad. Por favor, recargá el chat.";
+        }
+
         return "Lo siento, tuve un problema al procesar tu mensaje. Por favor intenta de nuevo.";
     }
 };
 
 export const streamMessage = async function* (text: string) {
-    if (!chat) {
-        await startChat();
-    }
-
-    if (!chat) {
-         throw new Error("Failed to initialize chat session");
-    }
-
     try {
-        const resultStream = await chat.sendMessageStream({ message: text });
-        for await (const chunk of resultStream) {
-            const response = chunk as GenerateContentResponse;
-            if (response.text) {
-                yield response.text;
+        if (!chatSession) {
+            await startChat();
+        }
+
+        if (!chatSession) throw new Error("Sesión de chat no inicializada");
+
+        const result = await chatSession.sendMessageStream(text);
+        for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            if (chunkText) {
+                yield chunkText;
             }
         }
-    } catch (error) {
-        console.error("Error streaming message:", error);
-        yield "Error de conexión.";
+    } catch (error: any) {
+        console.error("Error en streamMessage:", error);
+        const msg = (error?.message || "").toLowerCase();
+        
+        if (msg.includes("429")) {
+            yield "QUOTA_EXCEEDED: Límite de uso alcanzado, probá en unos segundos.";
+        } else if (msg.includes("404") || msg.includes("not found")) {
+            chatSession = null;
+            yield "ERROR: Se perdió la conexión con el modelo (404). Por favor, intentá enviar el mensaje de nuevo.";
+        } else {
+            yield "Error de conexión temporal. Por favor intentá de nuevo.";
+        }
     }
 };

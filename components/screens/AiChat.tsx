@@ -51,16 +51,35 @@ export const AiChatScreen: React.FC = () => {
         try {
             const stream = streamMessage(userMsg.text);
             let fullText = '';
+            let hasError = false;
             
             for await (const chunk of stream) {
+                if (chunk.startsWith("QUOTA_EXCEEDED: ")) {
+                    hasError = true;
+                    fullText = chunk.replace("QUOTA_EXCEEDED: ", "");
+                    break;
+                }
+                if (chunk.startsWith("ERROR: ")) {
+                    hasError = true;
+                    fullText = chunk.replace("ERROR: ", "");
+                    break;
+                }
                 fullText += chunk;
                 setMessages(prev => prev.map(msg => 
                     msg.id === modelMsgId ? { ...msg, text: fullText } : msg
                 ));
             }
+
+            if (hasError) {
+                setMessages(prev => prev.map(msg => 
+                    msg.id === modelMsgId ? { ...msg, text: fullText, isError: true } : msg
+                ));
+            }
         } catch (error) {
             console.error(error);
-            // Error handling handled inside service usually, but fallback here
+            setMessages(prev => prev.map(msg => 
+                msg.id === modelMsgId ? { ...msg, text: "Error de conexión. Intentá de nuevo.", isError: true } : msg
+            ));
         } finally {
             setIsLoading(false);
         }
@@ -74,20 +93,22 @@ export const AiChatScreen: React.FC = () => {
     };
 
     return (
-        <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white transition-colors duration-200 min-h-screen pb-24 flex flex-col">
+        <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white transition-colors duration-200 min-h-screen pb-24 flex flex-col md:pb-6 md:pl-64">
             <BackHeader title="Hablar con Aida" />
             
-            <main className="flex-1 flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <main className="flex-1 flex flex-col overflow-hidden w-full max-w-5xl mx-auto bg-white/50 dark:bg-black/20 md:border-x md:border-gray-200 md:dark:border-gray-800">
+                <div className="flex-1 overflow-y-auto p-4 space-y-6">
                     {messages.map((msg) => (
                         <div 
                             key={msg.id} 
                             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
-                            <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm text-lg leading-relaxed ${
+                            <div className={`max-w-[85%] sm:max-w-[75%] p-5 rounded-3xl shadow-sm text-lg leading-relaxed ${
                                 msg.role === 'user' 
                                     ? 'bg-primary text-white rounded-tr-sm' 
-                                    : 'bg-white dark:bg-[#2a3c2e] text-slate-800 dark:text-gray-100 rounded-tl-sm border border-gray-100 dark:border-gray-800'
+                                    : msg.isError 
+                                        ? 'bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-tl-sm border border-red-200 dark:border-red-800'
+                                        : 'bg-white dark:bg-[#2a3c2e] text-slate-800 dark:text-gray-100 rounded-tl-sm border border-gray-100 dark:border-gray-800'
                             }`}>
                                 {msg.role === 'model' && (
                                     <div className="flex items-center gap-2 mb-2 border-b border-gray-100 dark:border-gray-700 pb-2">
@@ -103,7 +124,7 @@ export const AiChatScreen: React.FC = () => {
                     ))}
                     {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
                          <div className="flex justify-start">
-                            <div className="bg-white dark:bg-[#2a3c2e] p-4 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 dark:border-gray-800">
+                            <div className="bg-white dark:bg-[#2a3c2e] p-4 rounded-3xl rounded-tl-sm shadow-sm border border-gray-100 dark:border-gray-800">
                                 <div className="flex gap-1.5">
                                     <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
                                     <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-100"></div>
@@ -115,9 +136,9 @@ export const AiChatScreen: React.FC = () => {
                     <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-4 bg-white dark:bg-[#1a2e1d] border-t border-gray-200 dark:border-gray-800">
-                    <div className="flex items-end gap-3 max-w-4xl mx-auto">
-                        <div className="flex-1 bg-gray-100 dark:bg-[#102213] rounded-3xl border-2 border-transparent focus-within:border-primary focus-within:bg-white dark:focus-within:bg-[#0c1a0e] transition-all">
+                <div className="p-4 bg-white dark:bg-[#1a2e1d] border-t border-gray-200 dark:border-gray-800 w-full">
+                    <div className="flex items-end gap-3 max-w-5xl mx-auto">
+                        <div className="flex-1 bg-gray-100 dark:bg-[#102213] rounded-[2rem] border-2 border-transparent focus-within:border-primary focus-within:bg-white dark:focus-within:bg-[#0c1a0e] transition-all">
                             <textarea
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
