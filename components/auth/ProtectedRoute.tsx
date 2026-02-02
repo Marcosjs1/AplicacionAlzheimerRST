@@ -21,7 +21,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!session) {
+  // Double check both session and user to be safe
+  if (!session || !session.user) {
     // Redirigir al login pero guardando la ubicación actual para volver después si es necesario
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

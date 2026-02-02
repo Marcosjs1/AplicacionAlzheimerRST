@@ -94,46 +94,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     useEffect(() => {
-        console.log('🔄 AuthContext: Iniciando verificación de sesión...');
-        
-        supabase.auth.getSession().then(({ data: { session }, error }) => {
-            if (error) {
-                console.error('❌ AuthContext: Error al obtener sesión inicial:', error.message);
-            } else {
-                setSession(session);
-                setUser(session?.user ?? null);
-                if (session?.user) {
-                    fetchProfile(session.user);
-                }
-            }
-        }).catch(err => {
-            console.error('❌ AuthContext: Excepción crítica al obtener sesión:', err);
-        }).finally(() => {
-            setLoading(false);
-        });
+        let mounted = true;
 
+        // Function to safely set loading
+        const safeSetLoading = (isLoading: boolean) => {
+            if (mounted) setLoading(isLoading);
+        };
+
+        const initAuth = async () => {
+            try {
+                // Check active session
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('❌ AuthContext: Error al obtener sesión inicial:', error.message);
+                }
+
+                if (mounted) {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                    if (session?.user) {
+                        await fetchProfile(session.user);
+                    }
+                }
+            } catch (err) {
+                console.error('❌ AuthContext: Excepción crítica al obtener sesión:', err);
+            } finally {
+                safeSetLoading(false);
+            }
+        };
+
+        // Initialize immediately
+        initAuth();
+
+        // Listen for changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             console.log(`🔔 AuthContext: Cambio de estado auth (${_event})`);
-            setSession(session);
-            setUser(session?.user ?? null);
             
-            if (session?.user) {
-                fetchProfile(session.user);
-            } else if (_event === 'SIGNED_OUT') {
-                setProfile(null);
-                // Clear all auth related local storage
-                localStorage.removeItem('userName');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('userBirthDate');
-                localStorage.removeItem('userEmail');
-                localStorage.removeItem('userAvatar');
-                // Keep preferences like fontSize/volume
+            if (mounted) {
+                setSession(session);
+                setUser(session?.user ?? null);
+                
+                if (session?.user) {
+                    // Only fetch profile if user changed or isn't set? 
+                    // For simplicity, we can fetch if we have a user.
+                    // Ideally we check if it's the same user ID to avoid redundant fetches,
+                    // but fetchProfile handles updates.
+                    fetchProfile(session.user);
+                } else if (_event === 'SIGNED_OUT') {
+                    setProfile(null);
+                    // Clear all auth related local storage
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userRole');
+                    localStorage.removeItem('userBirthDate');
+                    localStorage.removeItem('userEmail');
+                    localStorage.removeItem('userAvatar');
+                }
+                
+                // IMPORTANT: Ensure loading is false after any auth update
+                safeSetLoading(false);
             }
-            
-            setLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signOut = async () => {
